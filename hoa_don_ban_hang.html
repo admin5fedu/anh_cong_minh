@@ -57,10 +57,10 @@
                 <img id="company-logo" src="https://placehold.co/60x60/000000/FFFFFF?text=LOGO" alt="Company Logo" class="h-14 w-14 mr-2 rounded-lg">
                 <div>
                     <h2 id="company-name" class="text-lg font-semibold text-gray-700">Tên Công Ty Của Bạn</h2>
-                    <p id="company-address" class="text-gray-600 text-xs">Địa chỉ: Địa chỉ công ty của bạn</p>
-                    <p id="company-hotline" class="text-gray-600 text-xs">Hotline: (123) 456-7890</p>
-                    <p id="company-website" class="text-gray-600 text-xs">Website: www.congtycuaban.com</p>
-                    <p id="company-fanpage" class="text-gray-600 text-xs">Fanpage: fb.com/congtycuaban</p>
+                    <p class="text-gray-600 text-xs"><span class="font-semibold">Địa chỉ:</span> <span id="company-address">Địa chỉ công ty của bạn</span></p>
+                    <p class="text-gray-600 text-xs"><span class="font-semibold">Hotline:</span> <span id="company-hotline">(123) 456-7890</span></p>
+                    <p class="text-gray-600 text-xs"><span class="font-semibold">Website:</span> <span id="company-website">www.congtycuaban.com</span></p>
+                    <p class="text-gray-600 text-xs"><span class="font-semibold">Fanpage:</span> <span id="company-fanpage">fb.com/congtycuaban</span></p>
                 </div>
             </div>
             <div class="text-right">
@@ -114,7 +114,7 @@
                     <span id="subtotal-value" class="text-gray-900 font-medium">31.500.000 VNĐ</span>
                 </div>
                 <div class="flex justify-between mb-1 text-xs">
-                    <span class="text-gray-700">VAT (10%):</span>
+                    <span class="text-gray-700">VAT (<span id="vat-percentage">10</span>%):</span>
                     <span id="vat-value" class="text-gray-900 font-medium">3.150.000 VNĐ</span>
                 </div>
                 <div class="flex justify-between mb-1 text-xs">
@@ -167,10 +167,12 @@
 
             // Cập nhật thông tin công ty
             updateText('company-name', 'cong_ty', 'Tên Công Ty Của Bạn');
-            updateText('company-address', 'dia_chi', 'Địa chỉ: Địa chỉ công ty của bạn');
-            updateText('company-hotline', 'hot_line', 'Hotline: (123) 456-7890');
-            updateText('company-website', 'website', 'Website: www.congtycuaban.com');
-            updateText('company-fanpage', 'fanpage', 'Fanpage: fb.com/congtycuaban');
+            // Cập nhật các trường có tiêu đề in đậm
+            document.getElementById('company-address').textContent = params.get('dia_chi') || 'Địa chỉ công ty của bạn';
+            document.getElementById('company-hotline').textContent = params.get('hot_line') || '(123) 456-7890';
+            document.getElementById('company-website').textContent = params.get('website') || 'www.congtycuaban.com';
+            document.getElementById('company-fanpage').textContent = params.get('fanpage') || 'fb.com/congtycuaban';
+
             updateImageSrc('company-logo', 'logo', 'https://placehold.co/60x60/000000/FFFFFF?text=LOGO');
             updateImageSrc('qr-code-img', 'qr_code', 'https://placehold.co/80x80/000000/FFFFFF?text=QR+Code');
 
@@ -186,6 +188,10 @@
             updateText('other-value', 'khac', '0 VNĐ');
             updateText('total-value', 'tong_tien', '34.650.000 VNĐ');
             updateText('total-in-words', 'bang_chu', 'Ba mươi tư triệu sáu trăm năm mươi nghìn đồng chẵn.');
+
+            // Cập nhật tỷ lệ VAT
+            updateText('vat-percentage', 'ty_le_vat', '10');
+
 
             // Xử lý dữ liệu bảng chi tiết sản phẩm từ biến 'data'
             const productDataString = params.get('data');
