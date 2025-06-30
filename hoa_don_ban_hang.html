@@ -87,7 +87,7 @@
             </div>
         </div>
 
-        <!-- Bảng chi tiết đơn hàng (giữ nguyên cấu trúc để bạn có thể tự thêm logic nếu cần) -->
+        <!-- Bảng chi tiết đơn hàng -->
         <div class="mb-6 rounded-lg border border-gray-200">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="table-header">
@@ -101,31 +101,7 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200 text-xs" id="product-details-table-body">
-                    <!-- Dữ liệu mẫu, bạn có thể tạo động bằng JS nếu cần -->
-                    <tr>
-                        <td class="px-2 py-2 text-gray-900">1</td>
-                        <td class="px-4 py-2 text-gray-500">K01</td>
-                        <td class="px-2 py-2 text-gray-900">Laptop Dell XPS 15 (Core i7, 16GB RAM, 512GB SSD)</td>
-                        <td class="px-2 py-2 text-gray-500">Cái</td>
-                        <td class="px-2 py-2 text-gray-500 text-right">25.000.000 VNĐ</td>
-                        <td class="px-2 py-2 text-gray-900 text-right">25.000.000 VNĐ</td>
-                    </tr>
-                    <tr>
-                        <td class="px-2 py-2 text-gray-900">2</td>
-                        <td class="px-4 py-2 text-gray-500">K02</td>
-                        <td class="px-2 py-2 text-gray-900">Màn hình LG 27 inch 4K UltraFine Display</td>
-                        <td class="px-2 py-2 text-gray-500">Cái</td>
-                        <td class="px-2 py-2 text-gray-500 text-right">5.000.000 VNĐ</td>
-                        <td class="px-2 py-2 text-gray-900 text-right">5.000.000 VNĐ</td>
-                    </tr>
-                    <tr>
-                        <td class="px-2 py-2 text-gray-900">3</td>
-                        <td class="px-4 py-2 text-gray-500">K01</td>
-                        <td class="px-2 py-2 text-gray-900">Bàn phím cơ Logitech G Pro X (Blue Clicky Switches)</td>
-                        <td class="px-2 py-2 text-gray-500">Cái</td>
-                        <td class="px-2 py-2 text-gray-500 text-right">1.500.000 VNĐ</td>
-                        <td class="px-2 py-2 text-gray-900 text-right">1.500.000 VNĐ</td>
-                    </tr>
+                    <!-- Dữ liệu sản phẩm sẽ được tải động từ URL tại đây -->
                 </tbody>
             </table>
         </div>
@@ -204,19 +180,53 @@
             updateText('invoice-date', 'ngay_lap', '30/06/2025');
             updateText('sale-date', 'ngay_ban', '30/06/2025');
 
-            // Cập nhật tổng cộng
+            // Cập nhật tổng cộng (sử dụng các biến đã khai báo trước đó)
             updateText('subtotal-value', 'tong_tri_gia', '31.500.000 VNĐ');
             updateText('vat-value', 'vat', '3.150.000 VNĐ');
             updateText('other-value', 'khac', '0 VNĐ');
             updateText('total-value', 'tong_tien', '34.650.000 VNĐ');
             updateText('total-in-words', 'bang_chu', 'Ba mươi tư triệu sáu trăm năm mươi nghìn đồng chẵn.');
 
-            // Lưu ý: Phần bảng chi tiết sản phẩm (product-details-table-body)
-            // Hiện tại vẫn là dữ liệu tĩnh. Nếu bạn muốn truyền dữ liệu sản phẩm qua URL,
-            // bạn sẽ cần một định dạng phức tạp hơn (ví dụ: JSON string trong URL)
-            // và logic JavaScript để phân tích cú pháp và thêm các hàng vào bảng.
-            // Ví dụ: products=[{"kho":"K01","sp":"Laptop","dvt":"Cái","dg":"25000000","tt":"25000000"}]
-            // Sau đó, bạn sẽ cần vòng lặp để tạo các hàng <tr> và <td>.
+            // Xử lý dữ liệu bảng chi tiết sản phẩm từ biến 'data'
+            const productDataString = params.get('data');
+            const tableBody = document.getElementById('product-details-table-body');
+            tableBody.innerHTML = ''; // Xóa các hàng mẫu tĩnh
+
+            if (productDataString) {
+                const rows = productDataString.split('_b_');
+                // Định nghĩa các lớp CSS cho từng cột để giữ nguyên định dạng
+                const columnClasses = [
+                    'px-2 py-2 text-gray-900', // TT
+                    'px-4 py-2 text-gray-500', // Kho
+                    'px-2 py-2 text-gray-900', // Sản phẩm
+                    'px-2 py-2 text-gray-500', // ĐVT
+                    'px-2 py-2 text-gray-500 text-right', // Đơn giá
+                    'px-2 py-2 text-gray-900 text-right' // Thành tiền
+                ];
+
+                rows.forEach(rowString => {
+                    const columns = rowString.split('_a_');
+                    if (columns.length === 6) { // Đảm bảo đủ 6 cột
+                        const tr = document.createElement('tr');
+                        columns.forEach((colValue, index) => {
+                            const td = document.createElement('td');
+                            td.textContent = colValue;
+                            td.className = columnClasses[index]; // Áp dụng lớp CSS tương ứng
+                            tr.appendChild(td);
+                        });
+                        tableBody.appendChild(tr);
+                    }
+                });
+            } else {
+                // Hiển thị một hàng thông báo nếu không có dữ liệu
+                const tr = document.createElement('tr');
+                const td = document.createElement('td');
+                td.colSpan = 6; // Kéo dài qua tất cả các cột
+                td.className = 'px-2 py-2 text-gray-500 text-center italic';
+                td.textContent = 'Không có dữ liệu sản phẩm.';
+                tr.appendChild(td);
+                tableBody.appendChild(tr);
+            }
         });
     </script>
 </body>
