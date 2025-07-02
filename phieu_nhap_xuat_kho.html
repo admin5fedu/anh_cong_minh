@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phiếu Nhập/Xuất Kho</title>
+    <!-- Tải Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Màu nền nhẹ */
+        }
+        .invoice-container {
+            max-width: 210mm; /* Chiều rộng A4 */
+            min-height: 297mm; /* Chiều cao A4 */
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 20mm; /* Khoảng cách lề A4 */
+            border-radius: 12px; /* Góc bo tròn */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ nhàng */
+            box-sizing: border-box; /* Đảm bảo padding không làm tăng kích thước */
+        }
+        .table-header th {
+            background-color: #f9fafb; /* Màu nền cho tiêu đề bảng */
+        }
+
+        /* Styles for printing */
+        @media print {
+            body {
+                background-color: #fff;
+                margin: 0;
+                padding: 0;
+            }
+            .invoice-container {
+                max-width: 210mm;
+                min-height: 297mm;
+                margin: 0;
+                padding: 20mm;
+                border-radius: 0;
+                box-shadow: none;
+                page-break-after: always; /* Đảm bảo mỗi phiếu trên một trang mới khi in */
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="invoice-container">
+        <!-- Thông tin Đơn vị và Bộ phận -->
+        <div class="text-left mb-4 text-xs">
+            <p><span class="font-semibold">Đơn vị:</span> <span id="don-vi">........................................</span></p>
+            <p><span class="font-semibold">Bộ phận:</span> <span id="bo-phan">........................................</span></p>
+        </div>
+
+        <!-- Tiêu đề phiếu -->
+        <div class="text-center mb-6">
+            <h1 id="phieu-type" class="text-2xl font-bold text-gray-800 mb-1">PHIẾU NHẬP KHO</h1>
+            <p class="text-sm text-gray-600">Ngày <span id="phieu-day">DD</span> tháng <span id="phieu-month">MM</span> năm <span id="phieu-year">YYYY</span></p>
+            <p class="text-sm font-medium text-gray-600">Số: <span id="phieu-id" class="font-semibold text-gray-800">PNK-001</span></p>
+        </div>
+
+        <!-- Thông tin chung -->
+        <div class="mb-6 p-3 bg-blue-50 rounded-lg border border-blue-200 text-xs">
+            <p class="mb-1"><span class="font-semibold">Người tạo:</span> <span id="nguoi-tao">Tên người tạo</span></p>
+            <p class="mb-1"><span class="font-semibold">Mục đích:</span> <span id="muc-dich">Mục đích nhập/xuất kho</span></p>
+            <p class="mb-1"><span class="font-semibold">Kho đi:</span> <span id="kho-di">Kho A</span> <span class="ml-4 font-semibold">Kho đến:</span> <span id="kho-den">Kho B</span></p>
+        </div>
+
+        <!-- Bảng chi tiết sản phẩm -->
+        <div class="mb-6 rounded-lg border border-gray-200">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="table-header">
+                    <tr>
+                        <th scope="col" class="px-2 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tl-lg">TT</th>
+                        <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sản phẩm</th>
+                        <th scope="col" class="px-2 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">ĐVT</th>
+                        <th scope="col" class="px-2 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Số lượng</th>
+                        <th scope="col" class="px-2 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Đơn giá</th>
+                        <th scope="col" class="px-2 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tr-lg">Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200 text-xs" id="product-details-table-body">
+                    <!-- Dữ liệu sản phẩm sẽ được tải động từ URL tại đây -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Phần tổng cộng -->
+        <div class="flex justify-end mb-8">
+            <div class="w-full p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <div class="flex justify-between mb-1 text-xs">
+                    <span class="text-gray-700">Tổng trị giá:</span>
+                    <span id="subtotal-value" class="text-gray-900 font-medium">0 VNĐ</span>
+                </div>
+                <div class="flex justify-between mb-1 text-xs">
+                    <span class="text-gray-700">VAT:</span>
+                    <span id="vat-value" class="text-gray-900 font-medium">0 VNĐ</span>
+                </div>
+                <div class="flex justify-between mb-1 text-xs">
+                    <span class="text-gray-700">Khác:</span>
+                    <span id="other-value" class="text-gray-900 font-medium">0 VNĐ</span>
+                </div>
+                <div class="flex justify-between text-base font-bold text-gray-800 pt-2 border-t border-gray-300 mt-2">
+                    <span>TỔNG TIỀN:</span>
+                    <span id="total-value">0 VNĐ</span>
+                </div>
+                <div class="mt-2 text-gray-700 text-xs">
+                    <span class="font-semibold">Bằng chữ:</span> <span id="total-in-words">Không đồng chẵn.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chữ ký -->
+        <div class="flex justify-around text-center mt-8 text-xs">
+            <div class="w-1/4 p-1">
+                <p class="font-semibold text-gray-700 mb-5">Người tạo</p>
+            </div>
+            <div class="w-1/4 p-1">
+                <p class="font-semibold text-gray-700 mb-5">Người kiểm tra</p>
+            </div>
+            <div class="w-1/4 p-1">
+                <p class="font-semibold text-gray-700 mb-5">Người liên quan</p>
+            </div>
+            <div class="w-1/4 p-1">
+                <p class="font-semibold text-gray-700 mb-5">Người xác nhận</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const params = new URLSearchParams(window.location.search);
+
+            // Hàm cập nhật nội dung text
+            function updateText(elementId, paramName, defaultValue) {
+                const element = document.getElementById(elementId);
+                if (element) {
+                    element.textContent = params.get(paramName) || defaultValue;
+                }
+            }
+
+            // Cập nhật thông tin Đơn vị và Bộ phận
+            const donVi = params.get('don_vi');
+            document.getElementById('don-vi').textContent = donVi || '........................................'; // Chuỗi chấm ngắn hơn
+
+            const boPhan = params.get('bo_phan');
+            document.getElementById('bo-phan').textContent = boPhan || '........................................'; // Chuỗi chấm ngắn hơn
+
+
+            // Cập nhật tiêu đề phiếu (Nhập/Xuất)
+            const phieuType = (params.get('loai_phieu') || 'NHẬP').toUpperCase();
+            document.getElementById('phieu-type').textContent = 'PHIẾU ' + phieuType + ' KHO';
+
+            // Cập nhật ngày tháng
+            const ngayLap = params.get('ngay_lap') || '30/06/2025';
+            const dateParts = ngayLap.split('/');
+            if (dateParts.length === 3) {
+                document.getElementById('phieu-day').textContent = dateParts[0];
+                document.getElementById('phieu-month').textContent = dateParts[1];
+                document.getElementById('phieu-year').textContent = dateParts[2];
+            } else {
+                document.getElementById('phieu-day').textContent = 'DD';
+                document.getElementById('phieu-month').textContent = 'MM';
+                document.getElementById('phieu-year').textContent = 'YYYY';
+            }
+
+            // Cập nhật thông tin chung
+            updateText('phieu-id', 'id_phieu', 'PNK-001');
+            updateText('nguoi-tao', 'nguoi_tao', 'Tên người tạo');
+            updateText('muc-dich', 'muc_dich', 'Mục đích nhập/xuất kho');
+            updateText('kho-di', 'kho_di', 'Kho A');
+            updateText('kho-den', 'kho_den', 'Kho B');
+
+            // Cập nhật tổng cộng
+            updateText('subtotal-value', 'tong_tri_gia', '0 VNĐ');
+            updateText('vat-value', 'vat', '0 VNĐ');
+            updateText('other-value', 'khac', '0 VNĐ');
+            updateText('total-value', 'tong_tien', '0 VNĐ');
+            updateText('total-in-words', 'bang_chu', 'Không đồng chẵn.');
+
+            // Xử lý dữ liệu bảng chi tiết sản phẩm từ biến 'data'
+            const productDataString = params.get('data');
+            const tableBody = document.getElementById('product-details-table-body');
+            tableBody.innerHTML = ''; // Xóa các hàng mẫu tĩnh
+
+            if (productDataString) {
+                const rows = productDataString.split('_b_');
+                // Định nghĩa các lớp CSS cho các cột dữ liệu (không bao gồm TT)
+                // Thứ tự cột: Sản phẩm, ĐVT, Số lượng, Đơn giá, Thành tiền
+                const dataColumnClasses = [
+                    'px-4 py-2 text-left text-gray-900',          // Sản phẩm
+                    'px-2 py-2 text-center text-gray-500', // ĐVT (căn giữa)
+                    'px-2 py-2 text-center text-gray-500', // Số lượng (căn giữa)
+                    'px-2 py-2 text-center text-gray-500', // Đơn giá (căn giữa)
+                    'px-2 py-2 text-center text-gray-900'  // Thành tiền (căn giữa)
+                ];
+
+                rows.forEach((rowString, rowIndex) => {
+                    const columns = rowString.split('_a_');
+                    // Đảm bảo đủ 5 cột dữ liệu: Sản phẩm, ĐVT, Số lượng, Đơn giá, Thành tiền
+                    if (columns.length === 5) {
+                        const tr = document.createElement('tr');
+
+                        // Cột TT (Tự động đánh số và căn giữa)
+                        const ttTd = document.createElement('td');
+                        ttTd.textContent = rowIndex + 1; // Bắt đầu từ 1
+                        ttTd.className = 'px-2 py-2 text-center text-gray-900'; // Lớp CSS cho cột TT (thêm text-center)
+                        tr.appendChild(ttTd);
+
+                        // Các cột dữ liệu còn lại
+                        columns.forEach((colValue, colIndex) => {
+                            const td = document.createElement('td');
+                            td.textContent = colValue;
+                            td.className = dataColumnClasses[colIndex]; // Áp dụng lớp CSS tương ứng
+                            tr.appendChild(td);
+                        });
+                        tableBody.appendChild(tr);
+                    }
+                });
+            } else {
+                // Hiển thị một hàng thông báo nếu không có dữ liệu
+                const tr = document.createElement('tr');
+                const td = document.createElement('td');
+                td.colSpan = 6; // Đã thay đổi colSpan thành 6 (TT, Sản phẩm, ĐVT, Số lượng, Đơn giá, Thành tiền)
+                td.className = 'px-2 py-2 text-gray-500 text-center italic';
+                td.textContent = 'Không có dữ liệu sản phẩm.';
+                tr.appendChild(td);
+                tableBody.appendChild(tr);
+            }
+        });
+    </script>
+</body>
+</html>
