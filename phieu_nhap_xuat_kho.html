@@ -49,8 +49,8 @@
     <div class="invoice-container">
         <!-- Thông tin Đơn vị và Bộ phận -->
         <div class="text-left mb-4 text-xs">
-            <p><span class="font-semibold">Đơn vị:</span> <span id="don-vi">........................................</span></p>
-            <p><span class="font-semibold">Bộ phận:</span> <span id="bo-phan">........................................</span></p>
+            <p><span class="font-semibold">Đơn vị:</span> <span id="don-vi"></span></p>
+            <p><span class="font-semibold">Bộ phận:</span> <span id="bo-phan"></span></p>
         </div>
 
         <!-- Tiêu đề phiếu -->
@@ -142,10 +142,10 @@
 
             // Cập nhật thông tin Đơn vị và Bộ phận
             const donVi = params.get('don_vi');
-            document.getElementById('don-vi').textContent = donVi || '........................................'; // Chuỗi chấm ngắn hơn
+            document.getElementById('don-vi').textContent = donVi || ''; // Mặc định là trống
 
             const boPhan = params.get('bo_phan');
-            document.getElementById('bo-phan').textContent = boPhan || '........................................'; // Chuỗi chấm ngắn hơn
+            document.getElementById('bo-phan').textContent = boPhan || ''; // Mặc định là trống
 
 
             // Cập nhật tiêu đề phiếu (Nhập/Xuất)
