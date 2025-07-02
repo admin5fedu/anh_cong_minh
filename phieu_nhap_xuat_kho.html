@@ -55,16 +55,16 @@
 
         <!-- Tiêu đề phiếu -->
         <div class="text-center mb-6">
-            <h1 id="phieu-type" class="text-2xl font-bold text-gray-800 mb-1">PHIẾU NHẬP KHO</h1>
-            <p class="text-sm text-gray-600">Ngày <span id="phieu-day">DD</span> tháng <span id="phieu-month">MM</span> năm <span id="phieu-year">YYYY</span></p>
-            <p class="text-sm font-medium text-gray-600">Số: <span id="phieu-id" class="font-semibold text-gray-800">PNK-001</span></p>
+            <h1 id="phieu-type" class="text-2xl font-bold text-gray-800 mb-1"></h1>
+            <p class="text-sm text-gray-600">Ngày <span id="phieu-day"></span> tháng <span id="phieu-month"></span> năm <span id="phieu-year"></span></p>
+            <p class="text-sm font-medium text-gray-600">Số: <span id="phieu-id" class="font-semibold text-gray-800"></span></p>
         </div>
 
         <!-- Thông tin chung -->
         <div class="mb-6 p-3 bg-blue-50 rounded-lg border border-blue-200 text-xs">
-            <p class="mb-1"><span class="font-semibold">Người tạo:</span> <span id="nguoi-tao">Tên người tạo</span></p>
-            <p class="mb-1"><span class="font-semibold">Mục đích:</span> <span id="muc-dich">Mục đích nhập/xuất kho</span></p>
-            <p class="mb-1"><span class="font-semibold">Kho đi:</span> <span id="kho-di">Kho A</span> <span class="ml-4 font-semibold">Kho đến:</span> <span id="kho-den">Kho B</span></p>
+            <p class="mb-1"><span class="font-semibold">Người tạo:</span> <span id="nguoi-tao"></span></p>
+            <p class="mb-1"><span class="font-semibold">Mục đích:</span> <span id="muc-dich"></span></p>
+            <p class="mb-1"><span class="font-semibold">Kho đi:</span> <span id="kho-di"></span> <span class="ml-4 font-semibold">Kho đến:</span> <span id="kho-den"></span></p>
         </div>
 
         <!-- Bảng chi tiết sản phẩm -->
@@ -91,22 +91,22 @@
             <div class="w-full p-3 bg-gray-50 rounded-lg border border-gray-200">
                 <div class="flex justify-between mb-1 text-xs">
                     <span class="text-gray-700">Tổng trị giá:</span>
-                    <span id="subtotal-value" class="text-gray-900 font-medium">0 VNĐ</span>
+                    <span id="subtotal-value" class="text-gray-900 font-medium"></span>
                 </div>
                 <div class="flex justify-between mb-1 text-xs">
                     <span class="text-gray-700">VAT:</span>
-                    <span id="vat-value" class="text-gray-900 font-medium">0 VNĐ</span>
+                    <span id="vat-value" class="text-gray-900 font-medium"></span>
                 </div>
                 <div class="flex justify-between mb-1 text-xs">
                     <span class="text-gray-700">Khác:</span>
-                    <span id="other-value" class="text-gray-900 font-medium">0 VNĐ</span>
+                    <span id="other-value" class="text-gray-900 font-medium"></span>
                 </div>
                 <div class="flex justify-between text-base font-bold text-gray-800 pt-2 border-t border-gray-300 mt-2">
                     <span>TỔNG TIỀN:</span>
-                    <span id="total-value">0 VNĐ</span>
+                    <span id="total-value"></span>
                 </div>
                 <div class="mt-2 text-gray-700 text-xs">
-                    <span class="font-semibold">Bằng chữ:</span> <span id="total-in-words">Không đồng chẵn.</span>
+                    <span class="font-semibold">Bằng chữ:</span> <span id="total-in-words"></span>
                 </div>
             </div>
         </div>
@@ -142,42 +142,42 @@
 
             // Cập nhật thông tin Đơn vị và Bộ phận
             const donVi = params.get('don_vi');
-            document.getElementById('don-vi').textContent = donVi || ''; // Mặc định là trống
+            document.getElementById('don-vi').textContent = donVi || '';
 
             const boPhan = params.get('bo_phan');
-            document.getElementById('bo-phan').textContent = boPhan || ''; // Mặc định là trống
+            document.getElementById('bo-phan').textContent = boPhan || '';
 
 
             // Cập nhật tiêu đề phiếu (Nhập/Xuất)
-            const phieuType = (params.get('loai_phieu') || 'NHẬP').toUpperCase();
-            document.getElementById('phieu-type').textContent = 'PHIẾU ' + phieuType + ' KHO';
+            const phieuTypeParam = params.get('loai_phieu');
+            document.getElementById('phieu-type').textContent = phieuTypeParam ? ('PHIẾU ' + phieuTypeParam.toUpperCase() + ' KHO') : '';
 
             // Cập nhật ngày tháng
-            const ngayLap = params.get('ngay_lap') || '30/06/2025';
+            const ngayLap = params.get('ngay_lap') || '';
             const dateParts = ngayLap.split('/');
-            if (dateParts.length === 3) {
+            if (dateParts.length === 3 && ngayLap !== '') {
                 document.getElementById('phieu-day').textContent = dateParts[0];
                 document.getElementById('phieu-month').textContent = dateParts[1];
                 document.getElementById('phieu-year').textContent = dateParts[2];
             } else {
-                document.getElementById('phieu-day').textContent = 'DD';
-                document.getElementById('phieu-month').textContent = 'MM';
-                document.getElementById('phieu-year').textContent = 'YYYY';
+                document.getElementById('phieu-day').textContent = '';
+                document.getElementById('phieu-month').textContent = '';
+                document.getElementById('phieu-year').textContent = '';
             }
 
             // Cập nhật thông tin chung
-            updateText('phieu-id', 'id_phieu', 'PNK-001');
-            updateText('nguoi-tao', 'nguoi_tao', 'Tên người tạo');
-            updateText('muc-dich', 'muc_dich', 'Mục đích nhập/xuất kho');
-            updateText('kho-di', 'kho_di', 'Kho A');
-            updateText('kho-den', 'kho_den', 'Kho B');
+            updateText('phieu-id', 'id_phieu', '');
+            updateText('nguoi-tao', 'nguoi_tao', '');
+            updateText('muc-dich', 'muc_dich', '');
+            updateText('kho-di', 'kho_di', '');
+            updateText('kho-den', 'kho_den', '');
 
             // Cập nhật tổng cộng
-            updateText('subtotal-value', 'tong_tri_gia', '0 VNĐ');
-            updateText('vat-value', 'vat', '0 VNĐ');
-            updateText('other-value', 'khac', '0 VNĐ');
-            updateText('total-value', 'tong_tien', '0 VNĐ');
-            updateText('total-in-words', 'bang_chu', 'Không đồng chẵn.');
+            updateText('subtotal-value', 'tong_tri_gia', '');
+            updateText('vat-value', 'vat', '');
+            updateText('other-value', 'khac', '');
+            updateText('total-value', 'tong_tien', '');
+            updateText('total-in-words', 'bang_chu', '');
 
             // Xử lý dữ liệu bảng chi tiết sản phẩm từ biến 'data'
             const productDataString = params.get('data');
